@@ -121,8 +121,9 @@ class End_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
             self.present(dialog, animated: true, completion: nil)
         }
         else {
-            ad?.paramAlarmStation = leftTime[1]
-            ad?.paramTime = leftTime[2]
+            ad?.paramTime = leftTime[1]
+            ad?.paramAlarmStation = leftTime[2]
+            
             print(leftTime[1] + " " + leftTime[2])
         }
     }

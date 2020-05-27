@@ -15,6 +15,7 @@
 		329C6F8124795DEB00FF32CB /* Start_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329C6F8024795DEB00FF32CB /* Start_ViewController.swift */; };
 		329C6F872479605D00FF32CB /* Line_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329C6F862479605D00FF32CB /* Line_ViewController.swift */; };
 		329C6F89247962A000FF32CB /* End_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329C6F88247962A000FF32CB /* End_ViewController.swift */; };
+		32C2D5D9247D6A58007605E5 /* Timer_ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C2D5D8247D6A58007605E5 /* Timer_ViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		329C6F8024795DEB00FF32CB /* Start_ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Start_ViewController.swift; sourceTree = "<group>"; };
 		329C6F862479605D00FF32CB /* Line_ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Line_ViewController.swift; sourceTree = "<group>"; };
 		329C6F88247962A000FF32CB /* End_ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = End_ViewController.swift; sourceTree = "<group>"; };
+		32C2D5D8247D6A58007605E5 /* Timer_ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Timer_ViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 				329C6F862479605D00FF32CB /* Line_ViewController.swift */,
 				329C6F8024795DEB00FF32CB /* Start_ViewController.swift */,
 				329C6F88247962A000FF32CB /* End_ViewController.swift */,
+				32C2D5D8247D6A58007605E5 /* Timer_ViewController.swift */,
 				3226EBDE247907EC004C1C97 /* Assets.xcassets */,
 				3226EBE0247907EC004C1C97 /* LaunchScreen.storyboard */,
 				3226EBE3247907EC004C1C97 /* Info.plist */,
@@ -144,6 +147,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32C2D5D9247D6A58007605E5 /* Timer_ViewController.swift in Sources */,
 				329C6F8124795DEB00FF32CB /* Start_ViewController.swift in Sources */,
 				3226EBD6247907EA004C1C97 /* AppDelegate.swift in Sources */,
 				329C6F872479605D00FF32CB /* Line_ViewController.swift in Sources */,
