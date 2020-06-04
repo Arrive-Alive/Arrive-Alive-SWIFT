@@ -20,7 +20,7 @@ class Timer_ViewController: UIViewController {
         }
         if let get_time = ad?.paramTime {
             time = Int(get_time) ?? 10
-            time *= 1
+            time *= 60
         }
     }
     
@@ -46,7 +46,7 @@ class Timer_ViewController: UIViewController {
             }
         }
         else if (sender.titleLabel?.text == "알람 끄기"){
-            sender.setTitle("알람 종료", for: UIControl.State.normal)
+            sender.setTitle("시작 화면", for: UIControl.State.normal)
             AudioServicesDisposeSystemSoundID(SystemSoundID(kSystemSoundID_Vibrate))
         }
         else {
