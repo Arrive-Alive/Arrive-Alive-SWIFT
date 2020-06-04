@@ -85,8 +85,8 @@ class End_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         print("sending_data : " + send_data)
         
         // ip
-        let host_address = "127.0.0.1"
-        let host_port = 9997
+        let host_address = "20.20.1.151"
+        let host_port = 9999
         var input : InputStream?
         var output : OutputStream?
         
@@ -121,8 +121,8 @@ class End_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
             self.present(dialog, animated: true, completion: nil)
         }
         else {
-            ad?.paramTime = leftTime[1]
-            ad?.paramAlarmStation = leftTime[2]
+            ad?.paramAlarmStation = leftTime[1]
+            ad?.paramTime = leftTime[2]
             
             print(leftTime[1] + " " + leftTime[2])
         }
