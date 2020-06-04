@@ -1,4 +1,4 @@
-#include "db.h"
+﻿#include "db.h"
 
 DB::DB() : connection(NULL) {};
 DB::DB(const char* host, const char* user, const char* passwd, const char* db) {
@@ -14,9 +14,9 @@ DB::DB(const char* host, const char* user, const char* passwd, const char* db) {
 		class_stat = false;
 		return;
 	}
-	mysql_query(connection, "set session character_set_connection=euckr;");
-	mysql_query(connection, "set session character_set_results=euckr;");
-	mysql_query(connection, "set session character_set_client=euckr;");
+	mysql_query(connection, "set session character_set_connection=utf8;");
+	mysql_query(connection, "set session character_set_results=utf8;");
+	mysql_query(connection, "set session character_set_client=utf8;");
 	class_stat = true;
 }
 bool DB::exit_db() {
@@ -32,12 +32,10 @@ std::string DB::search_line(const char* line) {
 	std::lock_guard<std::mutex> guard(DB_mtx);
 	if ((query_stat = mysql_query(connection, tmp.c_str())) != 0) {
 		std::cout << "Mysql 에러 : " << mysql_error(&conn) << std::endl;
-		DB_mtx.unlock();
 		return NULL;
 	}
 	if ((sql_result = mysql_store_result(connection)) == NULL) {
 		std::cout << "Mysql 에러 : " << mysql_error(&conn) << std::endl;
-		DB_mtx.unlock();
 		return NULL;
 	}
 	int num_fields = mysql_num_fields(sql_result);
@@ -48,26 +46,31 @@ std::string DB::search_line(const char* line) {
 	mysql_free_result(sql_result);
 	return result_str;
 }
-int DB::get_station_inteval(const char *line, const char* s, const char* e) {
-	std::string tmp;
+std::string DB::get_station_inteval(const char *line, const char* s, const char* e) {
+	std::string tmp = std::string("select get_interval(0, ") + line[0] + ", '" + s + "', '" + e + "');", result_str;
 	
 	std::lock_guard<std::mutex> guard(DB_mtx);
 	if ((query_stat = mysql_query(connection, tmp.c_str())) != 0) {
 		std::cout << "Mysql 에러 : " << mysql_error(&conn) << std::endl;
-		DB_mtx.unlock();
 		return NULL;
 	}
 	if ((sql_result = mysql_store_result(connection)) == NULL) {
 		std::cout << "Mysql 에러 : " << mysql_error(&conn) << std::endl;
-		DB_mtx.unlock();
 		return NULL;
 	}
+	int num_fields = mysql_num_fields(sql_result);
+	while ((sql_row = mysql_fetch_row(sql_result)) != NULL && *sql_row != NULL) {
+		for (int i = 0; i < num_fields; i++)
+			result_str = result_str + sql_row[i] + "@";
+	}
+	mysql_free_result(sql_result);
+	return result_str;
 }
 
 DB *database;
 
 bool init_db() {
-	database = &DB(HOST, USER, PASSWORD, DB_NAME);
+	database = new DB(HOST, USER, PASSWORD, DB_NAME);
 	if (!database->class_stat) {
 		return false;
 	}
