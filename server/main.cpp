@@ -1,3 +1,4 @@
+﻿#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <iostream>
 #include <thread>
 #include <vector>
@@ -6,11 +7,10 @@
 #include "db.h"
 #pragma comment(lib, "ws2_32")
 
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-#define PORT 8888
+#define PORT 9999
 #define PACKET_SIZE 1024
+#define ERROR_MESSAGE "0@"
 int sock_fail_cnt = 0;
-
 
 std::vector<std::string> split(std::string str, char delimiter) {
 	std::vector<std::string> internal;
@@ -21,7 +21,6 @@ std::vector<std::string> split(std::string str, char delimiter) {
 	}
 	return internal;
 }
-
 
 
 void app_handle_thread(SOCKET clnt_sock) {
@@ -38,22 +37,31 @@ void app_handle_thread(SOCKET clnt_sock) {
 		}
 		data += buf;
 	}
+	std::cout << "recv : " << buf << std::endl;
 	if (recvcnt <= 0) return;
 	std::vector <std::string> vec_data = split(data, '@');
 	if (vec_data[0] == "1") {	// 호선 선택
 		std::string tmp = "1@" + database->search_line(vec_data[1].c_str());
+
+		std::cout << "send : " << tmp << std::endl;
+
 		send(clnt_sock, tmp.c_str(), tmp.size(), 0);
+		
 	}
 	else if (vec_data[0] == "2") {	// 시작/도착역 선택
+		std::string tmp = database->get_station_inteval(vec_data[1].c_str(), vec_data[2].c_str(), vec_data[3].c_str());
 
+		std::cout << "send : " << tmp << std::endl;
+
+		if(tmp=="") send(clnt_sock, ERROR_MESSAGE, sizeof(ERROR_MESSAGE), 0);
+		else { tmp = "2@" + tmp; send(clnt_sock, tmp.c_str(), tmp.size(), 0); }
+		
 	}
-
-
-
-
+	else send(clnt_sock, ERROR_MESSAGE, sizeof(ERROR_MESSAGE), 0);
 	closesocket(clnt_sock);
 	std::cout << "end" << std::endl;
 }
+
 
 bool app_handle() {
 	SOCKET server_sock;
@@ -65,21 +73,21 @@ bool app_handle() {
 		server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 		server_addr.sin_port = htons(PORT + sock_fail_cnt);
 		server_addr.sin_family = AF_INET;
-
+		
 		if (bind(server_sock, (SOCKADDR*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR)
 			throw - 2;
-		if (listen(server_sock, SOMAXCONN) == -1)
+		if (listen(server_sock, SOMAXCONN) == SOCKET_ERROR)
 			throw - 3;
 
 		while (1) {
 			sockaddr_in clnt_addr = {};
-			size_t clnt_size;
-			SOCKET clnt_sock = accept(server_sock, (SOCKADDR*)&clnt_addr, (int*)&clnt_size);
+			int clnt_size = sizeof(clnt_addr);
+			SOCKET clnt_sock = accept(server_sock, (SOCKADDR*)&clnt_addr, &clnt_size);
 			if (clnt_sock == SOCKET_ERROR)
 				throw - 4;
 
-			//std::cout << "new connection : " << inet_ntoa(clnt_addr.sin_addr) << std::endl;
-			std::thread clnt_thread = std::thread();
+			std::cout << "new connection : " << inet_ntoa(clnt_addr.sin_addr) << std::endl;
+			std::thread clnt_thread = std::thread(&app_handle_thread, clnt_sock);
 			clnt_thread.detach();
 		}
 		return true;
@@ -100,22 +108,24 @@ bool app_handle() {
 			std::cout << "socket accept fail, press any key to restart" << std::endl;
 			break;
 		}
-
+		std::cout << "code : " << ::WSAGetLastError() << std::endl;
 		sock_fail_cnt = sock_fail_cnt > 50 ? 0 : sock_fail_cnt + 1;
 		return false;
 	}
 }
 
 
-int main() {
+int __cdecl main() {
 	WSADATA data;
 	::WSAStartup(MAKEWORD(2, 2), &data);
 
-	/*while (!init_db()) {
+	while (!init_db()) {
 		std::cout << "database open fail, press any key to retry" << std::endl;
 		getchar();
-	}*/
-	//app_handle();
+	}
+	while (!app_handle()) {
+		getchar();
+	}
 
 	database->exit_db();
 	::WSACleanup();
