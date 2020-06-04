@@ -59,8 +59,8 @@ class Line_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         self.presentingViewController?.dismiss(animated: true)
         
         // ip
-        let host_address = "127.0.0.1"
-        let host_port = 9997
+        let host_address = "20.20.1.151"
+        let host_port = 9999
         var input : InputStream?
         var output : OutputStream?
         
@@ -73,6 +73,7 @@ class Line_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         input!.open()
         
         let msg = "1@" + line[selectRow] + ";"
+        print(msg)
         guard (output != nil) else { return }
         let outData = msg.data(using: .utf8)
         
