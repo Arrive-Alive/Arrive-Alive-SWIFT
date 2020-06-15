@@ -61,8 +61,9 @@ class Timer_ViewController: UIViewController {
     
     func timeLimitStart() {
         State.text = "가는 중"
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: "timeLimit", userInfo: nil, repeats: true)
-    }
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(Timer_ViewController.timeLimit), userInfo: nil, repeats: true)
+//        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: "timeLimit", userInfo: nil, repeats: true)
+        }
     
     @objc func timeLimit() {
         if time > 0 {
@@ -70,7 +71,6 @@ class Timer_ViewController: UIViewController {
             timeDown.text = "남은 시간 : \(time/60)분 \(time%60)초"
         }
         else{
-            
             timeLimitStop()
         }
     }
