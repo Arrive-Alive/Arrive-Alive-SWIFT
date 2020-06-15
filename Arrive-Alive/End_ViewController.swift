@@ -17,11 +17,6 @@ class End_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         if let get_station = ad?.paramStation {
             end = get_station
         }
-        /*
-        if let get_start = ad?.paramStart {
-            end = end.filter(){$0 != get_start}
-        }
-         */
     }
     
     var selectRow = 0
@@ -67,26 +62,38 @@ class End_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
     @IBAction func end_alarmButton(_ sender: Any) {
         ad?.paramEnd = end[selectRow]
         self.presentingViewController?.dismiss(animated: true)
-        var send_value_array = ["", "", ""]
-
+        var send_value_array = ["", "", "", ""]
+        
+        if let get_cityName = ad?.paramLocation {
+            send_value_array[0] = get_cityName
+        }
+        
         if let get_line = ad?.paramLine {
-            send_value_array[0] = get_line
+            send_value_array[1] = get_line
         }
         
         if let get_start = ad?.paramStart {
-            send_value_array[1] = get_start
+            send_value_array[2] = get_start
         }
         
         if let get_end = ad?.paramEnd {
-            send_value_array[2] = get_end
+            send_value_array[3] = get_end
         }
         
-        let send_data = "2@" + send_value_array.joined(separator : "@") + ";"
+        let send_data = "3@" + send_value_array.joined(separator : "@") + ";"
         print("sending_data : " + send_data)
         
         // ip
-        let host_address = "20.20.1.151"
-        let host_port = 9999
+        var host_address : String = ""
+        var host_port : Int = 0
+
+        if let get_ip = ad?.paramIP {
+            host_address = get_ip
+        }
+        if let get_host = ad?.paramHost {
+            host_port = get_host
+        }
+        
         var input : InputStream?
         var output : OutputStream?
         

@@ -10,7 +10,8 @@ import UIKit
 
 class Timer_ViewController: UIViewController {
     let ad = UIApplication.shared.delegate as? AppDelegate
-    var time = 10 // 소요기간 여기에 넣으면 됨
+    var backgroundTaskIdentifier: UIBackgroundTaskIdentifier?
+    var time = 10
     var alarm_station = ""
 
     override func viewWillAppear(_ animated: Bool) {
@@ -33,7 +34,10 @@ class Timer_ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        backgroundTaskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: {
+            UIApplication.shared.endBackgroundTask(self.backgroundTaskIdentifier!)
+        })
     }
     
     @IBAction func pressedButton(_ sender: UIButton){
@@ -56,7 +60,7 @@ class Timer_ViewController: UIViewController {
     }
     
     func timeLimitStart() {
-        State.text = "상태 : 가는 중"
+        State.text = "가는 중"
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: "timeLimit", userInfo: nil, repeats: true)
     }
     
@@ -66,6 +70,7 @@ class Timer_ViewController: UIViewController {
             timeDown.text = "남은 시간 : \(time/60)분 \(time%60)초"
         }
         else{
+            
             timeLimitStop()
         }
     }
@@ -76,7 +81,7 @@ class Timer_ViewController: UIViewController {
         startTimer = false
         timer.invalidate()
         timeDown.text = "타이머 종료"
-        State.text = "상태 : 2정거장 전"
+        State.text = "2정거장 전"
         Control_Button.isEnabled = true
         Control_Button.setTitle("알람 끄기", for: .normal)
 

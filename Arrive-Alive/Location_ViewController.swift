@@ -1,32 +1,26 @@
 //
-//  Line_ViewController.swift
+//  Location_ViewController.swift
 //  Arrive-Alive
 //
-//  Created by pjh on 2020/05/23.
+//  Created by pjh on 2020/06/15.
 //  Copyright © 2020 COMP420. All rights reserved.
 //
 
 import UIKit
 import Foundation
 
-class Line_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, StreamDelegate {
+class Location_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, StreamDelegate {
     let ad = UIApplication.shared.delegate as? AppDelegate
-    var line = [""]
+    var location = ["대구", "수도권", "부산", "대전", "광주"]
     var selectRow = 0
-    var get_station = ""
+    var get_line = ""
     
-    override func viewWillAppear(_ animated: Bool) {
-        if let get_line = ad?.paramLines {
-            line = get_line
-        }
-    }
-    
-    @IBOutlet weak var line_picker: UIPickerView!
+    @IBOutlet weak var Location_picker: UIPickerView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        line_picker.delegate = self
-        line_picker.dataSource = self
+        Location_picker.delegate = self
+        Location_picker.dataSource = self
     }
     
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -34,11 +28,11 @@ class Line_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return line.count
+        return location.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-         return line[row]
+         return location[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -52,21 +46,21 @@ class Line_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
             let buffersize = 1024
             var buffer = [UInt8](repeating :0, count : buffersize)
             iStream.read(&buffer, maxLength: buffersize)
-            get_station = String(bytes: buffer, encoding: String.Encoding.utf8)!
+            get_line = String(bytes: buffer, encoding: String.Encoding.utf8)!
             
         default:
             return
         }
     }
     
-    @IBAction func initial_nextButton(_ sender: Any) {
-        ad?.paramLine = line[selectRow]
+    @IBAction func Location_button(_ sender: Any) {
+        ad?.paramLocation = location[selectRow]
         self.presentingViewController?.dismiss(animated: true)
         
         // ip
         var host_address : String = ""
         var host_port : Int = 0
-                
+
         if let get_ip = ad?.paramIP {
             host_address = get_ip
         }
@@ -76,7 +70,7 @@ class Line_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         
         var input : InputStream?
         var output : OutputStream?
-        
+            
         Stream.getStreamsToHost(withName: host_address, port: host_port, inputStream: &input, outputStream: &output)
         output!.open()
 
@@ -84,32 +78,25 @@ class Line_ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         let myRunLoop = RunLoop.current
         input?.schedule(in: myRunLoop, forMode: RunLoop.Mode.default)
         input!.open()
-
-        var send_value_array = ["", ""]
-
-        if let get_cityName = ad?.paramLocation {
-            send_value_array[0] = get_cityName
-        }
-
-        send_value_array[1] = line[selectRow]
         
-        let msg = "2@" + send_value_array.joined(separator : "@") + ";"
+        let msg = "1@" + location[selectRow] + ";"
         print(msg)
         guard (output != nil) else { return }
         let outData = msg.data(using: .utf8)
-        
+            
         outData?.withUnsafeBytes({ (p: UnsafePointer<UInt8>) -> Void in
             output!.write(p, maxLength: (outData?.count)!)
         })
-        
+            
         stream(input!, handle: Stream.Event.hasBytesAvailable)
         input!.close()
         output!.close()
         // ip
-            
-        //var get_station 에 호선에 해당하는 역들이 들어옴 -> 서버에서 받아오는 값
-        get_station = get_station.replacingOccurrences(of: "\0", with: "")
-        get_station = get_station.replacingOccurrences(of: "2@", with: "")
-        ad?.paramStation = get_station.components(separatedBy: "@")
+
+        //var get_line 에 호선에 해당하는 역들이 들어옴 -> 서버에서 받아오는 값
+        print(get_line)
+        get_line = get_line.replacingOccurrences(of: "\0", with: "")
+        get_line = get_line.replacingOccurrences(of: "1@", with: "")
+        ad?.paramLines = get_line.components(separatedBy: "@")
     }
 }

@@ -10,14 +10,18 @@ import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    var paramLocation : String?
+    var paramLines : Array<String>?
     var paramLine : String?
     var paramStart : String?
     var paramEnd : String?
     var paramStation : Array<String>?
-    
     var paramTime : String?
     var paramAlarmStation : String?
     
+    var paramIP : String = "20.20.1.151"
+    var paramHost : Int = 9999
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         return true
