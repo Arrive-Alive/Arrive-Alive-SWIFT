@@ -24,8 +24,9 @@ public:
 	DB();
 	DB(const char* host, const char* user, const char* passwd, const char* db);
 	bool exit_db();
-	std::string search_line(const char* line);
-	std::string get_station_inteval(const char *line, const char* s, const char* e);
+	std::string search_line(const char* city);
+	std::string search_station(const char* city, const char* line);
+	std::string get_station_inteval(const char* state, const char *line, const char* s, const char* e);
 };
 
 extern DB *database;
