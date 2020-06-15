@@ -1,10 +1,13 @@
 ﻿#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#pragma once
 #include <iostream>
 #include <thread>
 #include <vector>
 #include <sstream>
 #include <WinSock2.h>
 #include "db.h"
+
+
 #pragma comment(lib, "ws2_32")
 
 #define PORT 9999
@@ -40,21 +43,29 @@ void app_handle_thread(SOCKET clnt_sock) {
 	std::cout << "recv : " << buf << std::endl;
 	if (recvcnt <= 0) return;
 	std::vector <std::string> vec_data = split(data, '@');
-	if (vec_data[0] == "1") {	// 호선 선택
+	if (vec_data[0] == "1") {	// 도시 선택
 		std::string tmp = "1@" + database->search_line(vec_data[1].c_str());
 
 		std::cout << "send : " << tmp << std::endl;
 
-		send(clnt_sock, tmp.c_str(), tmp.size(), 0);
+		send(clnt_sock, tmp.c_str(), tmp.size()+1, 0);
+
+	}
+	else if (vec_data[0] == "2") {	// 호선 선택
+		std::string tmp = "2@" + database->search_station(vec_data[1].c_str(), vec_data[2].c_str());
+
+		std::cout << "send : " << tmp << std::endl;
+
+		send(clnt_sock, tmp.c_str(), tmp.size() + 1, 0);
 		
 	}
-	else if (vec_data[0] == "2") {	// 시작/도착역 선택
-		std::string tmp = database->get_station_inteval(vec_data[1].c_str(), vec_data[2].c_str(), vec_data[3].c_str());
+	else if (vec_data[0] == "3") {	// 시작/도착역 선택
+		std::string tmp = database->get_station_inteval(vec_data[1].c_str(), vec_data[2].c_str(), vec_data[3].c_str(), vec_data[4].c_str());
 
 		std::cout << "send : " << tmp << std::endl;
 
 		if(tmp=="") send(clnt_sock, ERROR_MESSAGE, sizeof(ERROR_MESSAGE), 0);
-		else { tmp = "2@" + tmp; send(clnt_sock, tmp.c_str(), tmp.size(), 0); }
+		else { tmp = "3@" + tmp; send(clnt_sock, tmp.c_str() , tmp.size() + 1, 0); }
 		
 	}
 	else send(clnt_sock, ERROR_MESSAGE, sizeof(ERROR_MESSAGE), 0);
@@ -116,6 +127,7 @@ bool app_handle() {
 
 
 int __cdecl main() {
+	std::wcout.imbue(std::locale("kor"));  // windows only
 	WSADATA data;
 	::WSAStartup(MAKEWORD(2, 2), &data);
 
@@ -126,7 +138,6 @@ int __cdecl main() {
 	while (!app_handle()) {
 		getchar();
 	}
-
 	database->exit_db();
 	::WSACleanup();
 	return 0;
