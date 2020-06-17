@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var paramTime : String?
     var paramAlarmStation : String?
     
-    var paramIP : String = "20.20.1.151"
+    var paramIP : String = "172.20.10.4"
     var paramHost : Int = 9999
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
