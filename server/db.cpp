@@ -48,8 +48,8 @@ std::string DB::search_line(const char* city) {
 	return result_str;
 }
 std::string DB::search_station(const char* city, const char* line) {
-	std::string tmp = "select sname from station where cid=(select cid from city where cname='", result_str;
-	tmp = tmp + city + "') and lid=(select lid from line where lname='"  +line + "');";
+	std::string tmp = "select sname from city C join line L on C.cid=L.cid join station S on L.lid=S.lid and C.cid=S.cid where C.cname='", result_str;
+	tmp = tmp + city + "' and L.lname='"  +line + "';";
 	std::lock_guard<std::mutex> guard(DB_mtx);
 	if ((query_stat = mysql_query(connection, tmp.c_str())) != 0) {
 		std::cout << "Mysql 에러 : " << mysql_error(&conn) << std::endl;
@@ -69,8 +69,8 @@ std::string DB::search_station(const char* city, const char* line) {
 	return result_str;
 }
 std::string DB::get_station_inteval(const char* city, const char *line, const char* s, const char* e) {
-	std::string tmp = "select get_interval(", result_str;
-	tmp = tmp + "(select cid from city where cname ='" +city + "'),(select lid from line where lname='" + line + "'), '" + s + "', '" + e + "');";
+	std::string tmp = "select get_interval('", result_str;
+	tmp = tmp + city + "','" + line + "','" + s + "','" + e + "');";
 	std::lock_guard<std::mutex> guard(DB_mtx);
 	if ((query_stat = mysql_query(connection, tmp.c_str())) != 0) {
 		std::cout << "Mysql 에러 : " << mysql_error(&conn) << std::endl;
