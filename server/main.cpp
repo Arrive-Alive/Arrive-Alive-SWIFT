@@ -40,37 +40,34 @@ void app_handle_thread(SOCKET clnt_sock) {
 		}
 		data += buf;
 	}
-	std::cout << "recv : " << buf << std::endl;
 	if (recvcnt <= 0) return;
 	std::vector <std::string> vec_data = split(data, '@');
+	std::cout << "recv op : " << vec_data[0] << std::endl;
 	if (vec_data[0] == "1") {	// 도시 선택
 		std::string tmp = "1@" + database->search_line(vec_data[1].c_str());
-
-		std::cout << "send : " << tmp << std::endl;
-
 		send(clnt_sock, tmp.c_str(), tmp.size()+1, 0);
-
+		std::cout << "send line list" << std::endl;
 	}
 	else if (vec_data[0] == "2") {	// 호선 선택
 		std::string tmp = "2@" + database->search_station(vec_data[1].c_str(), vec_data[2].c_str());
-
-		std::cout << "send : " << tmp << std::endl;
-
 		send(clnt_sock, tmp.c_str(), tmp.size() + 1, 0);
-		
+		std::cout << "send station list" << std::endl;
 	}
 	else if (vec_data[0] == "3") {	// 시작/도착역 선택
 		std::string tmp = database->get_station_inteval(vec_data[1].c_str(), vec_data[2].c_str(), vec_data[3].c_str(), vec_data[4].c_str());
-
-		std::cout << "send : " << tmp << std::endl;
-
-		if(tmp=="") send(clnt_sock, ERROR_MESSAGE, sizeof(ERROR_MESSAGE), 0);
-		else { tmp = "3@" + tmp; send(clnt_sock, tmp.c_str() , tmp.size() + 1, 0); }
+		if (tmp == "") {
+			send(clnt_sock, ERROR_MESSAGE, sizeof(ERROR_MESSAGE), 0);
+			std::cout << "send error" << std::endl;
+		}
+		else { 
+			tmp = "3@" + tmp; 
+			send(clnt_sock, tmp.c_str() , tmp.size() + 1, 0); 
+			std::cout << "send interval" << std::endl;
+		}
 		
 	}
 	else send(clnt_sock, ERROR_MESSAGE, sizeof(ERROR_MESSAGE), 0);
 	closesocket(clnt_sock);
-	std::cout << "end" << std::endl;
 }
 
 
@@ -96,8 +93,6 @@ bool app_handle() {
 			SOCKET clnt_sock = accept(server_sock, (SOCKADDR*)&clnt_addr, &clnt_size);
 			if (clnt_sock == SOCKET_ERROR)
 				throw - 4;
-
-			std::cout << "new connection : " << inet_ntoa(clnt_addr.sin_addr) << std::endl;
 			std::thread clnt_thread = std::thread(&app_handle_thread, clnt_sock);
 			clnt_thread.detach();
 		}
